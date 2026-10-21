@@ -259,98 +259,81 @@ class LanguageIDModel(Module):
     methods here. We recommend that you implement the RegressionModel before
     working on this part of the project.)
     """
-    def __init__(self):
-        # Our dataset contains words from five different languages, and the
-        # combined alphabets of the five languages contain a total of 47 unique
-        # characters.
-        # You can refer to self.num_chars or len(self.languages) in your code
-        self.num_chars = 47
-        self.languages = ["English", "Spanish", "Finnish", "Dutch", "Polish"]
-        super(LanguageIDModel, self).__init__()
-        self.hidden_size = 256
-        self.input_layer = Linear(self.num_chars, self.hidden_size)
-        self.recurrent_layer = Linear(self.hidden_size, self.hidden_size)
-        self.output_layer = Linear(self.hidden_size, len(self.languages))
+    # def __init__(self):
+    #     # Our dataset contains words from five different languages, and the
+    #     # combined alphabets of the five languages contain a total of 47 unique
+    #     # characters.
+    #     # You can refer to self.num_chars or len(self.languages) in your code
+    #     self.num_chars = 47
+    #     self.languages = ["English", "Spanish", "Finnish", "Dutch", "Polish"]
+    #     super(LanguageIDModel, self).__init__()
+    #     """ YOUR CODE HERE """
 
-
-    def run(self, xs):
-        """
-        Runs the model for a batch of examples.
-
-        Although words have different lengths, our data processing guarantees
-        that within a single batch, all words will be of the same length (L).
-
-        Here `xs` will be a list of length L. Each element of `xs` will be a
-        tensor with shape (batch_size x self.num_chars), where every row in the
-        array is a one-hot vector encoding of a character. For example, if we
-        have a batch of 8 three-letter words where the last word is "cat", then
-        xs[1] will be a tensor that contains a 1 at position (7, 0). Here the
-        index 7 reflects the fact that "cat" is the last word in the batch, and
-        the index 0 reflects the fact that the letter "a" is the inital (0th)
-        letter of our combined alphabet for this task.
-
-        Your model should use a Recurrent Neural Network to summarize the list
-        `xs` into a single tensor of shape (batch_size x hidden_size), for your
-        choice of hidden_size. It should then calculate a tensor of shape
-        (batch_size x 5) containing scores, where higher scores correspond to
-        greater probability of the word originating from a particular language.
-
-        Inputs:
-            xs: a list with L elements (one per character), where each element
-                is a node with shape (batch_size x self.num_chars)
-        Returns:
-            A node with shape (batch_size x 5) containing predicted scores
-                (also called logits)
-        """
-        batch_size = xs[0].shape[0]
-        hidden = torch.zeros(batch_size, self.hidden_size, dtype=xs[0].dtype)
-        for x in xs:
-            hidden = relu(self.input_layer(x) + self.recurrent_layer(hidden))
-        return self.output_layer(hidden)
-
-    
-    def get_loss(self, xs, y):
-        """
-        Computes the loss for a batch of examples.
-
-        The correct labels `y` are represented as a node with shape
-        (batch_size x 5). Each row is a one-hot vector encoding the correct
-        language.
-
-        Inputs:
-            xs: a list with L elements (one per character), where each element
-                is a node with shape (batch_size x self.num_chars)
-            y: a node with shape (batch_size x 5)
-        Returns: a loss node
-        """
-        return cross_entropy(self.run(xs), y)
-        
-
-    def train(self, dataset):
-        """
-        Trains the model.
-
-        Note that when you iterate through dataloader, each batch will returned as its own vector in the form
-        (batch_size x length of word x self.num_chars). However, in order to run multiple samples at the same time,
-        get_loss() and run() expect each batch to be in the form (length of word x batch_size x self.num_chars), meaning
-        that you need to switch the first two dimensions of every batch. This can be done with the movedim() function 
-        as follows:
-
-        movedim(input_vector, initial_dimension_position, final_dimension_position)
-
-        For more information, look at the pytorch documentation of torch.movedim()
-        """
-        dataloader = DataLoader(dataset, batch_size=64, shuffle=True)
-        optimizer = optim.Adam(self.parameters(), lr=0.001)
-        for _ in range(35):
-            for batch in dataloader:
-                xs = movedim(batch['x'], 0, 1)
-                optimizer.zero_grad()
-                loss = self.get_loss(xs, batch['label'])
-                loss.backward()
-                optimizer.step()
-            if dataset.get_validation_accuracy() >= 0.85:
-                break
+    #
+    # def run(self, xs):
+    #     """
+    #     Runs the model for a batch of examples.
+    #
+    #     Although words have different lengths, our data processing guarantees
+    #     that within a single batch, all words will be of the same length (L).
+    #
+    #     Here `xs` will be a list of length L. Each element of `xs` will be a
+    #     tensor with shape (batch_size x self.num_chars), where every row in the
+    #     array is a one-hot vector encoding of a character. For example, if we
+    #     have a batch of 8 three-letter words where the last word is "cat", then
+    #     xs[1] will be a tensor that contains a 1 at position (7, 0). Here the
+    #     index 7 reflects the fact that "cat" is the last word in the batch, and
+    #     the index 0 reflects the fact that the letter "a" is the inital (0th)
+    #     letter of our combined alphabet for this task.
+    #
+    #     Your model should use a Recurrent Neural Network to summarize the list
+    #     `xs` into a single tensor of shape (batch_size x hidden_size), for your
+    #     choice of hidden_size. It should then calculate a tensor of shape
+    #     (batch_size x 5) containing scores, where higher scores correspond to
+    #     greater probability of the word originating from a particular language.
+    #
+    #     Inputs:
+    #         xs: a list with L elements (one per character), where each element
+    #             is a node with shape (batch_size x self.num_chars)
+    #     Returns:
+    #         A node with shape (batch_size x 5) containing predicted scores
+    #             (also called logits)
+    #     """
+    #     """ YOUR CODE HERE """
+    #
+    #
+    # def get_loss(self, xs, y):
+    #     """
+    #     Computes the loss for a batch of examples.
+    #
+    #     The correct labels `y` are represented as a node with shape
+    #     (batch_size x 5). Each row is a one-hot vector encoding the correct
+    #     language.
+    #
+    #     Inputs:
+    #         xs: a list with L elements (one per character), where each element
+    #             is a node with shape (batch_size x self.num_chars)
+    #         y: a node with shape (batch_size x 5)
+    #     Returns: a loss node
+    #     """
+    #     """ YOUR CODE HERE """
+    #
+    #
+    # def train(self, dataset):
+    #     """
+    #     Trains the model.
+    #
+    #     Note that when you iterate through dataloader, each batch will returned as its own vector in the form
+    #     (batch_size x length of word x self.num_chars). However, in order to run multiple samples at the same time,
+    #     get_loss() and run() expect each batch to be in the form (length of word x batch_size x self.num_chars), meaning
+    #     that you need to switch the first two dimensions of every batch. This can be done with the movedim() function
+    #     as follows:
+    #
+    #     movedim(input_vector, initial_dimension_position, final_dimension_position)
+    #
+    #     For more information, look at the pytorch documentation of torch.movedim()
+    #     """
+    #     """ YOUR CODE HERE """
 
         
 
@@ -394,7 +377,7 @@ class DigitConvolutionalModel(Module):
     Note that this class looks different from a standard pytorch model since we don't need to train it
     as it will be run on preset weights.
     """
-    
+
 
     def __init__(self):
         # Initialize your model parameters here
@@ -410,7 +393,7 @@ class DigitConvolutionalModel(Module):
 
     def run(self, x):
         return self(x)
- 
+
     def forward(self, x):
         """
         The convolutional layer is already applied, and the output is flattened for you. You should treat x as
@@ -438,8 +421,8 @@ class DigitConvolutionalModel(Module):
         """
         return cross_entropy(self.run(x), y)
 
-     
-        
+
+
 
     def train(self, dataset):
         """
@@ -458,46 +441,39 @@ class DigitConvolutionalModel(Module):
 
 
 
-class Attention(Module):
-    def __init__(self, layer_size, block_size):
-        super().__init__()
-        """
-        All the layers you should use are defined here.
-
-        In order to pass the autograder, make sure each linear layer matches up with their corresponding matrix,
-        ie: use self.k_layer to generate the K matrix.
-        """
-        self.k_layer = Linear(layer_size, layer_size)
-        self.q_layer = Linear(layer_size, layer_size)
-        self.v_layer = Linear(layer_size,layer_size)
-
-        #Masking part of attention layer
-        self.register_buffer("mask", torch.tril(torch.ones(block_size, block_size))
-                                     .view(1, 1, block_size, block_size))
-       
-        self.layer_size = layer_size
-
-
-    def forward(self, input):
-        """
-        Applies the attention mechanism to input. All necessary layers have 
-        been defined in __init__()
-
-        In order to apply the causal mask to a given matrix M, you should update
-        it as such:
-    
-        M = M.masked_fill(self.mask[:,:,:T,:T] == 0, float('-inf'))[0]
-
-        For the softmax activation, it should be applied to the last dimension of the input,
-        Take a look at the "dim" argument of torch.nn.functional.softmax to figure out how to do this.
-        """
-        B, T, C = input.size()
-
-        keys = self.k_layer(input)
-        queries = self.q_layer(input)
-        values = self.v_layer(input)
-        scores = matmul(keys, movedim(queries, 1, 2)) / (C ** 0.5)
-        scores = scores.masked_fill(self.mask[:, :, :T, :T] == 0, float('-inf'))[0]
-        return matmul(softmax(scores, dim=-1), values)
-
-     
+# class Attention(Module):
+#     def __init__(self, layer_size, block_size):
+#         super().__init__()
+#         """
+#         All the layers you should use are defined here.
+#
+#         In order to pass the autograder, make sure each linear layer matches up with their corresponding matrix,
+#         ie: use self.k_layer to generate the K matrix.
+#         """
+#         self.k_layer = Linear(layer_size, layer_size)
+#         self.q_layer = Linear(layer_size, layer_size)
+#         self.v_layer = Linear(layer_size,layer_size)
+#
+#         #Masking part of attention layer
+#         self.register_buffer("mask", torch.tril(torch.ones(block_size, block_size))
+#                                      .view(1, 1, block_size, block_size))
+#
+#         self.layer_size = layer_size
+#
+#
+#     def forward(self, input):
+#         """
+#         Applies the attention mechanism to input. All necessary layers have
+#         been defined in __init__()
+#
+#         In order to apply the causal mask to a given matrix M, you should update
+#         it as such:
+#
+#         M = M.masked_fill(self.mask[:,:,:T,:T] == 0, float('-inf'))[0]
+#
+#         For the softmax activation, it should be applied to the last dimension of the input,
+#         Take a look at the "dim" argument of torch.nn.functional.softmax to figure out how to do this.
+#         """
+#         B, T, C = input.size()
+#
+#         """YOUR CODE HERE"""
